@@ -1,0 +1,233 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Najm Ul Sehar - Research Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+    <header class="bg-blue-900 text-white py-6">
+        <div class="container mx-auto px-4 flex flex-col items-center">
+            <h1 class="text-3xl font-bold">Najm Ul Sehar</h1>
+            <p class="text-lg">Research Officer in NLP | Data-Centric Machine Learning</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <!-- Tabs Navigation -->
+        <nav class="mb-8">
+            <ul class="flex flex-wrap border-b border-gray-200">
+                <li>
+                    <button class="tab-button px-4 py-2 text-blue-600 border-b-2 border-blue-600" data-tab="about">About Me</button>
+                </li>
+                <li>
+                    <button class="tab-button px-4 py-2 text-gray-600 hover:text-blue-600" data-tab="education">Education</button>
+                </li>
+                <li>
+                    <button class="tab-button px-4 py-2 text-gray-600 hover:text-blue-600" data-tab="skills">Skills</button>
+                </li>
+                <li>
+                    <button class="tab-button px-4 py-2 text-gray-600 hover:text-blue-600" data-tab="publications">Publications</button>
+                </li>
+                <li>
+                    <button class="tab-button px-4 py-2 text-gray-600 hover:text-blue-600" data-tab="datasets">Datasets</button>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Tab Content -->
+        <div id="about" class="tab-content">
+            <h2 class="text-2xl font-semibold mb-4">About Me</h2>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="md:w-1/2">
+                    <p class="text-gray-700 text-justify">
+                        I am a Research Officer specializing in Natural Language Processing (NLP) at the Center for Language Engineering, KICS UET, Lahore. My work focuses on data-centric machine learning, including data filtering, impact-based selection, and curriculum learning to enhance training on large or synthetic datasets. I have hands-on experience in dataset creation, annotation, and model adaptation for low-resource languages like Urdu, Pashto, and Punjabi.
+                    </p>
+                    <div class="mt-4">
+                        <p class="text-justify"><strong>Email:</strong> <a href="mailto:najmuyul167@gmail.com" class="text-blue-600 hover:underline">najmayub167@gmail.com</a></p>
+                        <p class="text-justify"><strong>Google Scholar:</strong> <a href="https://scholar.google.com/citations?user=IhHngYcAAAAJ" class="text-blue-600 hover:underline">Najm Ayub</a></p>
+                        <p class="text-justify"><strong>GitHub:</strong> <a href="https://github.com/Najm-Ayub" class="text-blue-600 hover:underline">Najm-Ayub</a></p>
+                        <p class="text-justify"><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/najm-a-8a1b8622b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="text-blue-600 hover:underline">Najm Ayub</a></p>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <img src="/home/cle-nb-192/Downloads/najm.png" alt="Najm Ul Sehar Profile Picture" class="w-64 h-64 rounded-full object-cover">
+                </div>
+            </div>
+        </div>
+
+        <div id="education" class="tab-content hidden">
+            <h2 class="text-2xl font-semibold mb-4">Education</h2>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-medium">MS in Computer Science (CGPA: 3.83/4)</h3>
+                    <p class="text-gray-600">University of Engineering and Technology, Main Campus, Lahore, Pakistan</p>
+                    <p class="text-gray-600">May 2024 - Present</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-medium">BS in Computer Science (Gold Medalist, CGPA: 3.76/4)</h3>
+                    <p class="text-gray-600">University of Engineering and Technology, New Campus, Lahore, Pakistan</p>
+                    <p class="text-gray-600"> Oct 2020 - May 2024</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="skills" class="tab-content hidden">
+            <h2 class="text-2xl font-semibold mb-4">Skills</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-lg font-medium">Languages & Programming</h3>
+                    <p class="text-gray-700">Python, Bash, C++, Java, C</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium">Frameworks</h3>
+                    <p class="text-gray-700">PyTorch, Hugging Face Transformers, TensorFlow, Flask, Django</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium">Machine Learning & Data-Centric Concepts</h3>
+                    <p class="text-gray-700">Few-shot & Zero-shot Model Adaptation, NLP Data Collection & Annotation, End-to-end ASR Training & Evaluation, Speaker Identification, Verification & Diarization</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium">Speech & NLP Toolkits</h3>
+                    <p class="text-gray-700">Kaldi, OpenAI Whisper, Meta MMS, GStreamer, Praat</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium">Tools & Platforms</h3>
+                    <p class="text-gray-700">Git, Linux (Ubuntu), Windows, REST APIs</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="publications" class="tab-content hidden">
+            <h2 class="text-2xl font-semibold mb-4">Publications</h2>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-gray-700">
+                        <a href="https://aclanthology.org/2025.chipsal-1.20/" class="text-blue-600 hover:underline" target="_blank">Najm Ul Sehar, Ayesha Khalid, Farah Adeeba, and Sarmad Hussain. 2025. Benchmarking Whisper for Low-Resource Speech Recognition: An N-Shot Evaluation on Pashto, Punjabi, and Urdu. In Proceedings of the First Workshop on Challenges in Processing South Asian Languages (CHiPSAL 2025)</a>
+                        <br>
+                        Demonstrated Whisper's adaptability to low-resource South Asian languages through few-shot adaptation, significantly reducing WER.<br>
+                    </p>
+                </div>
+                <div>
+                    <p class="text-gray-700">
+                        <a href="https://aclanthology.org/2025.chipsal-1.17/" class="text-blue-600 hover:underline" target="_blank">Ayesha Khalid, Farah Adeeba, Najm Ul Sehar, and Sarmad Hussain. 2025. Bridging the Bandwidth Gap: A Mixed Band Telephonic Urdu ASR Approach with Domain Adaptation for Banking Applications. In Proceedings of the First Workshop on Challenges in Processing South Asian Languages (CHiPSAL 2025)</a>
+                        <br>
+                        Adapted Urdu ASR to telephonic banking data using TDNNs and custom LMs, outperforming Whisper’s zero-shot results. <br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="datasets" class="tab-content hidden">
+            <h2 class="text-2xl font-semibold mb-4">Datasets</h2>
+            <p class="text-gray-700 mb-4">
+                Below are sample datasets I contributed to for NLP and speech processing projects, including annotated data and sample media for low-resource language tasks.
+            </p>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-medium">Urdu Meeting Recordings Dataset</h3>
+                    <p class="text-gray-700">
+                        Annotated 242 multi-speaker Urdu meeting recordings for the Minutes Master project, used for topic modeling, summarization and action item tagging.<br>
+                        <strong>Sample Excel Sheet:</strong> <a href="https://docs.google.com/spreadsheets/d/1C2dJTN5gJRr2MnYUI3eKQtxRnBFRnPSy0RwlqTgeMag/edit?usp=sharing" class="text-blue-600 hover:underline" target="_blank">View Sheet</a><br>
+                        <strong>Sample Video:</strong> <a href="https://drive.google.com/file/d/PLACEHOLDER_ID/view" class="text-blue-600 hover:underline" target="_blank">View Sample Recording</a><br>
+                        <strong>Preview:</strong> The Excel sheet contains columns for Speaker ID, Transcription, Action Item Tags and Summary for a sample recording.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-medium">Urdu Tweet Dataset</h3>
+                    <p class="text-gray-700">
+                        Curated and processed Urdu tweet data for the Cyber Bullying Detection project using Beautiful Soup and manual verification.<br>
+                        <strong>Sample Excel Sheet:</strong> <a href="https://docs.google.com/spreadsheets/d/10KSc2joh_vbP_FE9tAH2qGySMgY8ViD5oULo6dDXggM/edit?gid=1384705643#gid=1384705643" class="text-blue-600 hover:underline" target="_blank">View Sheet</a><br>                        
+                        
+                        <strong>Preview:</strong> The Excel sheet includes columns for Tweet ID, Text, Language, Sentiment Label, review and other information.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-medium">Low-Resource Language ASR Dataset</h3>
+                    <p class="text-gray-700">
+                        Used datasets for low-resource South Asian languages (Pashto, Punjabi, Urdu) for few-shot adaptation in Whisper-based ASR systems.<br>
+                        
+                        <strong>Pashto:</strong> <a href="https://drive.google.com/file/d/17Mm30HqCrG9-0JG8hKWv-7UZEHqiOKdB/view?usp=drive_link" class="text-blue-600 hover:underline" target="_blank">View Demo Video</a><br>
+                        <strong>Punjabi:</strong> <a href="https://drive.google.com/file/d/1Fgk8MT_0KKnSy4V4P-VkGS7zc2Zko95T/view?usp=drive_link" class="text-blue-600 hover:underline" target="_blank">View Demo Video</a><br>
+                        <strong>Urdu:</strong> <a href="https://drive.google.com/file/d/1j69a8x72F890K5FK7Xoc-tPTaX6w67WS/view?usp=drive_link" class="text-blue-600 hover:underline" target="_blank">View Demo Video</a><br>
+                        
+                        
+                        <strong>Preview:</strong> These link contains sample audio clips.
+                    </p>
+                </div>
+            </div>
+            <p class="text-gray-700 mt-4">
+                Note: Full datasets are available upon request due to size and privacy constraints. Contact me at <a href="mailto:najmuyul167@gmail.com" class="text-blue-600 hover:underline">najmuyul167@gmail.com</a> for access.
+            </p>
+        </div>
+    </main>
+
+    <footer class="bg-blue-900 text-white py-4 fixed bottom-0 w-full">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Najm Ul Sehar. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const buttons = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active state from all buttons and content
+                buttons.forEach(btn => {
+                    btn.classList.remove('text-blue-600', 'border-blue-600');
+                    btn.classList.add('text-gray-600');
+                    btn.classList.remove('border-b-2');
+                });
+                contents.forEach(content => content.classList.add('hidden'));
+
+                // Add active state to clicked button and show corresponding content
+                button.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
